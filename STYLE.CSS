@@ -1,0 +1,447 @@
+:root {
+  --bg: #ffffff;
+  --text: #333333;
+  --navbar-bg: #ffffff;
+ --font-heading: "Amatic SC", system-ui, sans-serif;
+ --btn-transform:#e63946;
+ --btn-transform2:#e63705;
+ --cards-transform:#ffffff;
+ --contact-transform:lightgrey;
+}
+html{
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s;
+  font-family: sans-serif;
+  margin: 0%;
+}
+
+.navbar {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--navbar-bg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: 0.3s;
+  height: 100PX;
+  background: var(--bg);
+}
+
+.logo {
+  margin-left: 10%;  
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  margin-right: 40%;
+}
+
+.nav-links li {
+  position: relative;
+  
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: gray;
+  font-weight: 600;
+  position: relative;
+  display: flex;
+  
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--btn-transform);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: 0.3s;
+}
+
+.nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-links a.active {
+  color: var(--text);
+}
+
+.nav-links a.active::after {
+  animation: lineh 0.4s forwards;
+}
+
+body:has(section:target) .nav-links a.active {
+  color: var(--text);
+}
+
+body:has(section:target) .nav-links a.active::after {
+  transform: scaleX(0);
+  animation: none;
+}
+
+body:has(#home:target) .nav-links a[href="#home"],
+body:has(#chefs:target) .nav-links a[href="#chefs"],
+body:has(#gallery:target) .nav-links a[href="#gallery"],
+body:has(#contact:target) .nav-links a[href="#contact"] {
+  color: var(--text);
+}
+
+body:has(#home:target) .nav-links a[href="#home"]::after,
+body:has(#chefs:target) .nav-links a[href="#chefs"]::after,
+body:has(#gallery:target) .nav-links a[href="#gallery"]::after,
+body:has(#contact:target) .nav-links a[href="#contact"]::after {
+  animation: lineh 0.4s forwards;
+}
+
+@keyframes lineh {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.dark-btn {
+  cursor: pointer;
+  font-size: 22px;
+  color: var(--text);
+  position: absolute;
+  right: 70px;
+  top: 40px;
+  display: flex;
+  gap: 5px;
+}
+
+.dark-btn i.fa-sun {
+  display: none;
+}
+
+#darkToggle:checked + .dark-btn i.fa-moon {
+  display: none;
+}
+
+#darkToggle:checked + .dark-btn i.fa-sun {
+  display: inline-block;
+}
+
+body:has(#darkToggle:checked) {
+  --bg: #1a1a1a;
+  --text: #f0f0f0;
+  --navbar-bg: #272727;
+  --btn-transform:darkgoldenrod;
+  --btn-transform2:darkorange;
+  --cards-transform:#230000;
+  --contact-transform:black;
+   
+  
+}
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 80px 10%;
+  min-height: 80vh;
+}
+
+.hero-content {
+  max-width: 500px;
+}
+
+.hero-content h1 {
+  font-size:  4.0625rem;
+  margin-bottom: 20px;
+  color: var(--text);
+  font-family: var(--font-heading);
+}
+
+.hero-content p {
+  margin-bottom: 30px;
+  color: var(--text);
+  opacity: 0.8;
+  
+}
+
+.hero-buttons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.book-btn {
+  padding: 12px 25px;
+  background:var(--btn-transform);
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  transition: 0.3s;
+  font-weight: bold;
+  
+}
+
+.book-btn:hover {
+  background: var(--btn-transform2)
+}
+
+
+.video-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.play-circle {
+  position: relative;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.play-circle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 6px solid var(--btn-transform);
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  transform: rotate(-45deg);
+}
+
+.play-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--btn-transform);
+  font-size: 14px;
+}
+
+
+.hero-image img {
+  width: 550px;
+  filter: drop-shadow(7px 27px 16px gray);
+
+}
+.hero-image:hover img {
+  animation:vibrate 0.3s linear infinite;
+}
+
+@keyframes vibrate {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  20%  { transform: translate(-2px, 1px) rotate(-1deg); }
+  40%  { transform: translate(2px, -1px) rotate(1deg); }
+  60%  { transform: translate(-2px, 1px) rotate(0deg); }
+  80%  { transform: translate(2px, 0) rotate(-1deg); }
+  100% { transform: translate(0, 0) rotate(0deg);}
+}
+  /*AHMED END*/
+.chefs-section {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.sub-title {
+    color: var(--text);
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.main-title {
+    font-size: 50px;
+    margin-bottom: 40px;
+    font-weight: 500;
+    font-family: var(--font-heading);
+   
+}
+
+.main-title span {
+     color: var(--btn-transform);
+}
+
+.chefs-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.chef-card {
+    width: 450px;
+    background: #fff;
+    border-radius: 12px;
+    padding-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+.chef-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+}
+
+.chef-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.chef-image img {
+    width: 100%;
+    object-fit: cover;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    transition: transform 0.4s ease;
+}
+
+.chef-card:hover .chef-image img {
+    transform: scale(1.1);
+}
+
+.chef-card h2 {
+    font-size: 22px;
+    margin-top: 15px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.chef-card h4 {
+    color: #666;
+    margin-top: 5px;
+    font-weight: 400;
+}
+
+.chef-card p {
+    padding: 0 15px;
+    font-size: 14px;
+    color: #555;
+    margin-top: 10px;
+}
+
+.social-icons {
+    position: absolute;
+    top: 20px;
+    right: -50px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: 0.4s ease;
+    transition-delay: 0.5s;
+}
+
+.social-icons a {
+    color: #333;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.social-icons a:hover {
+    background: #d32f2f;
+    color: #fff;
+}
+
+.chef-card:hover .social-icons {
+  right: 15px;
+}
+/*MOHANAD END*/
+.masonry {
+  columns: 3;
+  column-gap: 10px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.gallery-item {
+  break-inside: avoid;
+  margin-bottom: 15px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px ;
+  border: 3px solid white;
+
+}
+
+.gallery-item img {
+  width: 100%;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.overlay {
+  position: absolute;
+  left: 0;
+  bottom: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: auto;
+  transition: bottom 0.45s ease;
+}
+
+.overlay h3,
+.overlay p {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.45s ease 0.15s, transform 0.45s ease 0.15s;
+  color: #fff;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+.gallery-item:hover .overlay {
+  bottom: 0;
+}
+
+.gallery-item:hover .overlay h3,
+.gallery-item:hover .overlay p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 992px) {
+  .masonry {
+    columns: 2;
+  }
+}
+
+@media (max-width: 576px) {
+  .masonry {
+    columns: 1;
+}
+}

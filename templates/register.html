@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic setup for the HTML document -->
+    <meta charset="UTF-8"> <!-- Support for special characters -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Makes site work on mobile phones -->
+    
+    <!-- Link to our CSS file for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='STYLE.css') }}">
+    
+    <!-- Link to Font Awesome for icons (user, lock, envelope icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Title that shows in browser tab -->
+    <title>Register - Mealify</title>
+</head>
+<body>
+
+<!-- Navigation bar at the top -->
+<nav class="navbar">
+    <!-- Restaurant name/logo -->
+    <div class="logo">Mealify.</div>
+    
+    <!-- Navigation menu -->
+    <ul class="nav-links">
+        <!-- Link to go back to home page -->
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        
+        <!-- Link to login page (if user already has account) -->
+        <li><a href="{{ url_for('login') }}">Login</a></li>
+    </ul>
+    
+    <!-- Hidden checkbox for dark mode toggle -->
+    <input type="checkbox" id="darkToggle" hidden>
+    
+    <!-- Button user clicks to switch between light/dark mode -->
+    <label for="darkToggle" class="dark-btn">
+        <i class="fa-solid fa-moon"></i> <!-- Moon icon for dark mode -->
+        <i class="fa-solid fa-sun"></i>  <!-- Sun icon for light mode -->
+    </label>
+</nav>
+
+<!-- Main content area -->
+<div class="container">
+    <!-- White card containing the registration form -->
+    <div class="auth-card">
+        <!-- Form title with icon -->
+        <h2><i class="fas fa-user-plus"></i> Register</h2>
+        
+        <!-- Display any messages from server (errors, success) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Registration form that sends data to Flask server -->
+        <form action="{{ url_for('register') }}" method="POST">
+            <!-- Username input field -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user"></i> <!-- User icon inside input -->
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+            </div>
+            
+            <!-- Email input field -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i> <!-- Envelope icon -->
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+            
+            <!-- Password input field -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i> <!-- Lock icon -->
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+            </div>
+            
+            <!-- Confirm password input field -->
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i> <!-- Lock icon -->
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+            </div>
+            
+            <!-- Submit button to create account -->
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+        </form>
+        
+        <!-- Link to login page for existing users -->
+        <div class="auth-links">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for interactive features -->
+<script>
+    // DARK MODE TOGGLE FUNCTION
+  
+    // Get the dark mode toggle checkbox
+    const darkToggle = document.getElementById('darkToggle');
+    
+    // Check if user previously saved a dark mode preference
+    const savedMode = localStorage.getItem('darkMode');
+    
+    // If dark mode was saved, apply it when page loads
+    if (savedMode === 'true') {
+        document.body.classList.add('dark-mode'); // Add dark mode class
+        if (darkToggle) darkToggle.checked = true; // Check the toggle
+    }
+    
+    // When user clicks the dark mode button
+    if (darkToggle) {
+        darkToggle.addEventListener('change', function() {
+            // Add or remove dark-mode class from body
+            document.body.classList.toggle('dark-mode', this.checked);
+            
+            // Save user's choice in browser storage
+            localStorage.setItem('darkMode', this.checked);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic HTML setup for proper text display -->
+    <meta charset="UTF-8">
+    <!-- Makes website work on mobile phones properly -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Link to our CSS file for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='STYLE.css') }}">
+    
+    <!-- Link to Font Awesome for food and navigation icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Page title shown in browser tab -->
+    <title>Order Food - Mealify</title>
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="navbar">
+    <!-- Restaurant logo -->
+    <div class="logo">Mealify.</div>
+    
+    <!-- Menu links -->
+    <ul class="nav-links">
+        <!-- Home page link with house icon -->
+        <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+        
+        <!-- Table booking page link with calendar icon -->
+        <li><a href="{{ url_for('book_table') }}"><i class="fas fa-calendar-alt"></i> Book Table</a></li>
+        
+        <!-- Current page (Order Food) marked as active -->
+        <li><a href="{{ url_for('order') }}" class="active">
+            <i class="fas fa-utensils"></i> Order Food
+        </a></li>
+        
+        <!-- Show logout button if user is logged in, otherwise show login -->
+        {% if user %}
+            <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+        {% endif %}
+    </ul>
+    
+    <!-- Hidden checkbox for dark mode toggle -->
+    <input type="checkbox" id="darkToggle" hidden>
+    
+    <!-- Dark mode toggle button users click -->
+    <label for="darkToggle" class="dark-btn">
+        <i class="fa-solid fa-moon"></i>  <!-- Dark mode icon -->
+        <i class="fa-solid fa-sun"></i>   <!-- Light mode icon -->
+    </label>
+</nav>
+
+<!-- Main content area -->
+<div class="container">
+    <!-- White card containing the order form -->
+    <div class="order-card">
+        <!-- Header section with title -->
+        <div class="order-header">
+            <h1><i class="fas fa-utensils"></i> Place Your Order</h1>
+            <p class="order-subtitle">Get your favorite meals delivered to your doorstep</p>
+        </div>
+        
+        <!-- Display any success/error messages from server -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <!-- Different icons for different message types -->
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Main order form that sends data to server -->
+        <form action="{{ url_for('order') }}" method="POST" class="order-form">
+            
+            <!-- Section 1: Customer name -->
+            <div class="form-section">
+                <h3><i class="fas fa-user"></i> Personal Information</h3>
+                <div class="form-group">
+                    <label for="name">Your Name *</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <!-- Name field, auto-filled if user is logged in -->
+                        <input type="text" id="name" name="name" 
+                               value="{{ user.username if user }}" 
+                               placeholder="Enter your name" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 2: Food order details -->
+            <div class="form-section">
+                <h3><i class="fas fa-hamburger"></i> Order Details</h3>
+                <div class="form-group">
+                    <label for="meal">Meal Order *</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-hamburger"></i>
+                        <!-- Field to type what food you want -->
+                        <input type="text" id="meal" name="meal" 
+                               placeholder="What would you like to order?" required>
+                    </div>
+                    <!-- Help text with example -->
+                    <small><i class="fas fa-info-circle"></i> Example: Pizza, Burger, Pasta, Salad, etc.</small>
+                </div>
+            </div>
+            
+            <!-- Section 3: Delivery address -->
+            <div class="form-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Delivery Information</h3>
+                <div class="form-group">
+                    <label for="address">Delivery Address *</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <!-- Big text box for address details -->
+                        <textarea id="address" name="address" rows="4" 
+                                  placeholder="Enter your full address including street, building, and city" required></textarea>
+                    </div>
+                    <!-- Delivery time information -->
+                    <small><i class="fas fa-clock"></i> Delivery time: 30-45 minutes</small>
+                </div>
+            </div>
+            
+            <!-- Action buttons at bottom -->
+            <div class="form-actions">
+                <!-- Submit button to place order -->
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-check-circle"></i> Place Order
+                </button>
+                
+                <!-- Cancel button to go back home -->
+                <a href="{{ url_for('index') }}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+            
+            <!-- Important information box -->
+            <div class="order-info">
+                <p><i class="fas fa-exclamation-circle"></i> Please ensure your address is correct before placing the order.</p>
+                <p><i class="fas fa-phone"></i> Need help? Call us: +1 5589 55488 55</p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript for interactive features -->
+<script>
+    // DARK MODE TOGGLE FUNCTIONALITY
+  
+    // Get the dark mode toggle element
+    const darkToggle = document.getElementById('darkToggle');
+    
+    // Check if user saved dark mode preference before
+    const savedMode = localStorage.getItem('darkMode');
+    
+    // If dark mode was saved, apply it now
+    if (savedMode === 'true') {
+        document.body.classList.add('dark-mode');
+        if (darkToggle) darkToggle.checked = true;
+    }
+    
+    // When user clicks dark mode toggle
+    if (darkToggle) {
+        darkToggle.addEventListener('change', function() {
+            // Toggle dark mode class on body
+            document.body.classList.toggle('dark-mode', this.checked);
+            
+            // Save preference in browser storage
+            localStorage.setItem('darkMode', this.checked);
+        });
+    }
+</script>
+
+</body>
+</html>

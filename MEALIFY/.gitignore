@@ -1,0 +1,3 @@
+MEALIFY/instance/*.db
+MEALIFY/instance/
+*.db

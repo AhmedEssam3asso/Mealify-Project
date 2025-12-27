@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic HTML setup for text encoding -->
+    <meta charset="UTF-8">
+    <!-- Makes website responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Link to our CSS styling file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='STYLE.css') }}">
+    
+    <!-- Link to Font Awesome for icons (lock, envelope, etc.) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Title shown in browser tab -->
+    <title>Login - Mealify</title>
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="navbar">
+    <!-- Restaurant logo/name -->
+    <div class="logo">Mealify.</div>
+    
+    <!-- Navigation menu links -->
+    <ul class="nav-links">
+        <!-- Link to go back to home page -->
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        
+        <!-- Link to registration page (if user doesn't have account) -->
+        <li><a href="{{ url_for('register') }}">Register</a></li>
+    </ul>
+    
+    <!-- Hidden checkbox for dark mode functionality -->
+    <input type="checkbox" id="darkToggle" hidden>
+    
+    <!-- Dark mode toggle button that users see and click -->
+    <label for="darkToggle" class="dark-btn">
+        <i class="fa-solid fa-moon"></i>  <!-- Moon icon (dark mode) -->
+        <i class="fa-solid fa-sun"></i>   <!-- Sun icon (light mode) -->
+    </label>
+</nav>
+
+<!-- Main content container -->
+<div class="container">
+    <!-- White card containing login form -->
+    <div class="auth-card">
+        <!-- Form title with icon -->
+        <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+        
+        <!-- Display any error/success messages from Flask -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <!-- Loop through all messages and show them -->
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Login form that sends data to Flask server -->
+        <form action="{{ url_for('login') }}" method="POST">
+            <!-- Email input field -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i>  <!-- Envelope icon inside field -->
+                    <!-- Email input box -->
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+            
+            <!-- Password input field -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i>  <!-- Lock icon inside field -->
+                    <!-- Password input box (hidden text) -->
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+            </div>
+            
+            <!-- Submit button to login -->
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <!-- Link to registration page for new users -->
+        <div class="auth-links">
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript code for interactive features -->
+<script>
+    // DARK MODE TOGGLE FUNCTIONALITY
+    
+    // Get the dark mode toggle checkbox
+    const darkToggle = document.getElementById('darkToggle');
+    
+    // Check if user saved dark mode preference before
+    const savedMode = localStorage.getItem('darkMode');
+    
+    // If dark mode was saved, apply it when page loads
+    if (savedMode === 'true') {
+        document.body.classList.add('dark-mode');  // Add dark mode class
+        if (darkToggle) darkToggle.checked = true; // Check the toggle button
+    }
+    
+    // Listen for when user clicks dark mode toggle
+    if (darkToggle) {
+        darkToggle.addEventListener('change', function() {
+            // Toggle dark mode class on body element
+            document.body.classList.toggle('dark-mode', this.checked);
+            
+            // Save user's preference in browser's local storage
+            localStorage.setItem('darkMode', this.checked);
+        });
+    }
+</script>
+
+</body>
+</html>

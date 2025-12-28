@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic HTML setup -->
+    <meta charset="UTF-8">
+    <!-- Makes website work properly on phones and tablets -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Link to our CSS styling file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='STYLE.css') }}">
+    
+    <!-- Link to Font Awesome for icons (crown, trash, users, etc.) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Title shown in browser tab -->
+    <title>Admin Panel - Mealify</title>
+</head>
+<body>
+<!-- Top navigation bar -->
+<nav class="navbar">
+    <!-- Admin panel title -->
+    <div class="logo">Mealify Admin</div>
+    
+    <!-- Navigation menu -->
+    <ul class="nav-links">
+        <!-- Link to go back to main website -->
+        <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+        
+        <!-- Link to logout from admin panel -->
+        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+    
+    <!-- Hidden checkbox for dark mode toggle -->
+    <input type="checkbox" id="darkToggle" hidden>
+    
+    <!-- Dark mode toggle button -->
+    <label for="darkToggle" class="dark-btn">
+        <i class="fa-solid fa-moon"></i>  <!-- Dark mode icon -->
+        <i class="fa-solid fa-sun"></i>   <!-- Light mode icon -->
+    </label>
+</nav>
+
+<!-- Main admin content area -->
+<div class="admin-section">
+    <!-- Main title of admin panel -->
+    <h1><i class="fas fa-crown"></i> Admin Dashboard</h1>
+    
+    <!-- Display any success/error messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- SECTION 1: USERS TABLE -->
+    <!-- Shows all registered users in the system -->
+    <h2><i class="fas fa-users"></i> Users ({{ users|length }})</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>           <!-- User ID number -->
+                <th>Username</th>     <!-- User's chosen name -->
+                <th>Email</th>        <!-- User's email address -->
+                <th>Actions</th>      <!-- Buttons to manage user -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <!-- Delete button for each user -->
+                    <a href="{{ url_for('delete_user', user_id=user.id) }}" 
+                       class="btn-delete" 
+                       onclick="return confirm('Delete {{ user.username }}?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- SECTION 2: ORDERS TABLE -->
+    <!-- Shows all food orders placed by customers -->
+    <h2><i class="fas fa-utensils"></i> Orders ({{ orders|length }})</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>           <!-- Order ID number -->
+                <th>Customer</th>     <!-- Who placed the order -->
+                <th>Meal</th>         <!-- What food was ordered -->
+                <th>Address</th>      <!-- Where to deliver -->
+                <th>Actions</th>      <!-- Buttons to manage order -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.name }}</td>
+                <td>{{ order.meal }}</td>
+                <td>{{ order.address }}</td>
+                <td>
+                    <!-- Delete button for each order -->
+                    <a href="{{ url_for('delete_order', order_id=order.id) }}" 
+                       class="btn-delete"
+                       onclick="return confirm('Delete this order?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- SECTION 3: BOOKINGS TABLE -->
+    <!-- Shows all table reservations made by customers -->
+    <h2><i class="fas fa-calendar-alt"></i> Table Bookings ({{ bookings|length }})</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>           <!-- Booking ID number -->
+                <th>Name</th>         <!-- Who made the booking -->
+                <th>Table #</th>      <!-- Which table was booked -->
+                <th>Time</th>         <!-- What time for reservation -->
+                <th>Actions</th>      <!-- Buttons to manage booking -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.name }}</td>
+                <td>{{ booking.table_number }}</td>
+                <td>{{ booking.booking_time }}</td>
+                <td>
+                    <!-- Delete button for each booking -->
+                    <a href="{{ url_for('delete_booking', booking_id=booking.id) }}" 
+                       class="btn-delete"
+                       onclick="return confirm('Delete this booking?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- SECTION 4: CONTACT MESSAGES TABLE -->
+    <!-- Shows all messages sent by customers through contact form -->
+    <h2><i class="fas fa-envelope"></i> Contact Messages ({{ messages|length }})</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>           <!-- Message ID number -->
+                <th>Name</th>         <!-- Who sent the message -->
+                <th>Email</th>        <!-- Sender's email -->
+                <th>Subject</th>      <!-- Message title -->
+                <th>Message</th>      <!-- First 50 characters of message -->
+                <th>Date</th>         <!-- When message was sent -->
+                <th>Actions</th>      <!-- Buttons to manage message -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for message in messages %}
+            <tr>
+                <td>{{ message.id }}</td>
+                <td>{{ message.name }}</td>
+                <td>{{ message.email }}</td>
+                <td>{{ message.subject }}</td>
+                <td>{{ message.message[:50] }}...</td>  <!-- Show only first 50 chars -->
+                <td>{{ message.created_at.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <!-- Delete button for each message -->
+                    <a href="{{ url_for('delete_message', message_id=message.id) }}" 
+                       class="btn-delete"
+                       onclick="return confirm('Delete this message?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript for interactive features -->
+<script>
+    // DARK MODE TOGGLE FUNCTIONALITY
+    
+    // Get the dark mode toggle checkbox
+    const darkToggle = document.getElementById('darkToggle');
+    
+    // Check if user previously saved dark mode preference
+    const savedMode = localStorage.getItem('darkMode');
+    
+    // If dark mode was saved, apply it on page load
+    if (savedMode === 'true') {
+        document.body.classList.add('dark-mode');
+        if (darkToggle) darkToggle.checked = true;
+    }
+    
+    // When user clicks dark mode toggle
+    if (darkToggle) {
+        darkToggle.addEventListener('change', function() {
+            // Add or remove dark-mode class
+            document.body.classList.toggle('dark-mode', this.checked);
+            
+            // Save preference in browser storage
+            localStorage.setItem('darkMode', this.checked);
+        });
+    }
+</script>
+</body>
+</html>

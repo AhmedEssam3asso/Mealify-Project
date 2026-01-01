@@ -165,3 +165,189 @@ def register():
         return redirect(url_for('login'))
     
     return render_template("register.html")
+
+# User login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Get login credentials
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+        
+        # Verify user exists and password is correct
+        if user and check_password_hash(user.password, password):
+            session['user_id'] = user.id  # Create user session
+            flash(f"Welcome, {user.username}!", "success")
+            return redirect(url_for('index'))
+        flash("Invalid email or password!", "danger")
+    
+    return render_template("login.html")
+
+# User logout route
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)  # Remove user from session
+    flash("Logged out successfully!", "info")
+    return redirect(url_for('index'))
+
+# Food ordering route
+@app.route('/order', methods=['GET', 'POST'])
+def order():
+    user = current_user()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Get order details from form
+        name = request.form.get('name')
+        meal = request.form.get('meal')
+        address = request.form.get('address')
+        
+        # Validate all fields are filled
+        if not all([name, meal, address]):
+            flash("Please fill all fields!", "danger")
+            return redirect(url_for('order'))
+        
+        # Save order to database
+        new_order = Order(
+            user_id=user.id, 
+            name=name, 
+            meal=meal, 
+            address=address
+        )
+        db.session.add(new_order)
+        db.session.commit()
+        
+        flash(f"Order for '{meal}' placed successfully!", "success")
+        return redirect(url_for('index'))
+
+    return render_template("order.html", user=user)
+
+# Table booking route
+@app.route('/book_table', methods=['GET', 'POST'])
+def book_table():
+    user = current_user()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Get booking details from form
+        name = request.form.get('name')
+        table_number = request.form.get('table')
+        booking_time = request.form.get('time')
+        
+        # Validate all fields are filled
+        if not all([name, table_number, booking_time]):
+            flash("Please fill all fields!", "danger")
+            return redirect(url_for('book_table'))
+        
+        # Check if table is already booked at that time
+        existing = TableBooking.query.filter_by(
+            table_number=table_number, 
+            booking_time=booking_time
+        ).first()
+        
+        if existing:
+            flash("Table already booked at this time!", "danger")
+        else:
+            # Save booking to database
+            new_booking = TableBooking(
+                user_id=user.id,
+                name=name,
+                table_number=table_number,
+                booking_time=booking_time
+            )
+            db.session.add(new_booking)
+            db.session.commit()
+            flash(f"Table {table_number} booked for {booking_time}!", "success")
+            return redirect(url_for('index'))
+
+    return render_template("book_table.html", user=user)
+
+# Admin dashboard route
+@app.route('/admin')
+def admin():
+    if not is_admin():
+        flash("Admin access only!", "danger")
+        return redirect(url_for('index'))
+    
+    # Get all data for admin to view
+    users = User.query.all()
+    orders = Order.query.all()
+    bookings = TableBooking.query.all()
+    messages = ContactMessage.query.all()
+    
+    return render_template(
+        "admin.html", 
+        users=users, 
+        orders=orders, 
+        bookings=bookings,
+        messages=messages,
+        user=current_user()
+    )
+
+# Delete user route (admin only)
+@app.route('/delete_user/<int:user_id>')
+def delete_user(user_id):
+    if not is_admin():
+        flash("Access denied!", "danger")
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    # Also delete user's bookings and orders
+    TableBooking.query.filter_by(user_id=user_id).delete()
+    Order.query.filter_by(user_id=user_id).delete()
+    db.session.delete(user)
+    db.session.commit()
+    
+    flash("User deleted!", "success")
+    return redirect(url_for('admin'))
+
+# Delete order route (admin only)
+@app.route('/delete_order/<int:order_id>')
+def delete_order(order_id):
+    if not is_admin():
+        flash("Access denied!", "danger")
+        return redirect(url_for('index'))
+    
+    order = Order.query.get_or_404(order_id)
+    db.session.delete(order)
+    db.session.commit()
+    
+    flash("Order deleted!", "success")
+    return redirect(url_for('admin'))
+
+# Delete booking route (admin only)
+@app.route('/delete_booking/<int:booking_id>')
+def delete_booking(booking_id):
+    if not is_admin():
+        flash("Access denied!", "danger")
+        return redirect(url_for('index'))
+    
+    booking = TableBooking.query.get_or_404(booking_id)
+    db.session.delete(booking)
+    db.session.commit()
+    
+    flash("Booking deleted!", "success")
+    return redirect(url_for('admin'))
+
+# Delete message route (admin only)
+@app.route('/delete_message/<int:message_id>')
+def delete_message(message_id):
+    if not is_admin():
+        flash("Access denied!", "danger")
+        return redirect(url_for('index'))
+    
+    message = ContactMessage.query.get_or_404(message_id)
+    db.session.delete(message)
+    db.session.commit()
+    
+    flash("Message deleted!", "success")
+    return redirect(url_for('admin'))
+
+# Start the Flask application
+if __name__ == "__main__":
+    app.run(debug=False)
